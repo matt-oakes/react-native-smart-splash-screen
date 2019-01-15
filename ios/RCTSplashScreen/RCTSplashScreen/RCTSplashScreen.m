@@ -11,6 +11,11 @@ static RCTRootView *rootView = nil;
 
 RCT_EXPORT_MODULE(SplashScreen)
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 
 + (void)open:(RCTRootView *)v {
     [RCTSplashScreen open:v withImageNamed:@"splash"];
@@ -25,8 +30,21 @@ RCT_EXPORT_MODULE(SplashScreen)
     view.image = [UIImage imageNamed:imageName];
     view.contentMode = UIViewContentModeScaleAspectFill;
 
+    [self open:v withView:view];
+}
+
++ (void)open:(RCTRootView *)v withXibNamed:(NSString *)xibName {
+    NSArray *nibContents = [[NSBundle mainBundle] loadNibNamed:xibName owner:nil options:nil];
+
+    UIView *view = [nibContents lastObject];
+    view.frame = rootView.bounds;
+
+    [self open:v withView:view];
+}
+
++ (void)open:(RCTRootView *)v withView:(UIView *)view {
+    rootView = v;
     [[NSNotificationCenter defaultCenter] removeObserver:rootView  name:RCTContentDidAppearNotification object:rootView];
-    
     [rootView setLoadingView:view];
 }
 
